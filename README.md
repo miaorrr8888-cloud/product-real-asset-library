@@ -52,3 +52,5 @@ python -m unittest discover -s tests -v
 由 miaorrr8888-cloud 在 AI 辅助下积累和维护，来源与边界见 [PROVENANCE.md](PROVENANCE.md)，许可见 [LICENSE](LICENSE)。
 
 [全部独立技能与阶段性工作记录](https://github.com/miaorrr8888-cloud/agent-skills-worklog)
+
+示例 `examples/demo.xlsx` 是用于演示解析关系的最小 ZIP/XML 测试夹具，不是可直接填写的完整 Excel 模板。
