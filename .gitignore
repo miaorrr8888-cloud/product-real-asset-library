@@ -1,0 +1,15 @@
+__pycache__/
+*.pyc
+.git/
+.env
+.env.*
+!.env.example
+*profile*/
+*Profile*/
+*.db
+*.sqlite*
+*.log
+.venv/
+venv/
+node_modules/
+runs/
