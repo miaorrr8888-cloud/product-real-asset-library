@@ -28,11 +28,15 @@ def text_of(si_xml):
     return "".join(ET.fromstring("<root>" + si_xml + "</root>").itertext())
 
 
+def local_name(element):
+    return element.tag.split('}')[-1]
+
+
 def load_strings(z):
-    if "xl/sharedStrings.xml" not in z.namelist():
-        return []
-    ss = z.read("xl/sharedStrings.xml").decode("utf-8", errors="replace")
-    return [text_of(x) for x in re.findall(r"<si>(.*?)</si>", ss, re.S)]
+    if 'xl/sharedStrings.xml' not in z.namelist(): return []
+    root = ET.fromstring(z.read('xl/sharedStrings.xml'))
+    return [''.join(n.text or '' for n in si.iter() if local_name(n) == 't')
+            for si in root if local_name(si) == 'si']
 
 
 def resolve_target(target):
@@ -52,19 +56,18 @@ def sheet_map(z):
 
 
 def cellimages(z):
-    """ID_xxx -> media/imageN.ext"""
-    if "xl/cellimages.xml" not in z.namelist():
-        return {}
-    ci = z.read("xl/cellimages.xml").decode("utf-8", errors="replace")
-    rels = z.read("xl/_rels/cellimages.xml.rels").decode("utf-8", errors="replace")
-    rid2t = dict(re.findall(r'Id="([^"]+)"[^>]*Target="([^"]+)"', rels))
+    if 'xl/cellimages.xml' not in z.namelist(): return {}
+    relpath = 'xl/_rels/cellimages.xml.rels'
+    if relpath not in z.namelist(): return {}
+    rels = ET.fromstring(z.read(relpath))
+    targets = {r.get('Id'): r.get('Target') for r in rels if r.get('TargetMode') != 'External'}
+    root = ET.fromstring(z.read('xl/cellimages.xml'))
     out = {}
-    for blk in re.findall(r"<xdr:pic>.*?</xdr:pic>", ci, re.S):
-        nm = re.search(r'name="([^"]+)"', blk)
-        em = re.search(r'r:embed="([^"]+)"', blk)
-        if nm and em:
-            t = rid2t.get(em.group(1), "?")
-            out[nm.group(1)] = t.replace("media/", "xl/media/")
+    for pic in root.iter():
+        if local_name(pic) != 'pic': continue
+        name = next((n.get('name') for n in pic.iter() if local_name(n) == 'cNvPr'), None)
+        embed = next((value for n in pic.iter() if local_name(n) == 'blip' for key,value in n.attrib.items() if key.split('}')[-1] == 'embed'), None)
+        if name and embed in targets: out[name] = resolve_target(targets[embed])
     return out
 
 
@@ -97,25 +100,20 @@ def main(book, want_sheet=None):
             continue
         s = z.read(path).decode("utf-8", errors="replace")
         rows = {}
-        # 注意：不能用 re.finditer(r'<c r="..".*?</c>') —— 自闭合空单元格
-        # （如 <c r="A1" s="5"/>）会让 `(.*?)</c>` 一路吞掉下一个单元格，
-        # 导致紧随其后的 B 列等被整列漏掉。改为按 <c r=" 切分，逐格解析。
-        for part in re.split(r'(?=<c r=")', s):
-            m = re.match(r'<c r="([A-Z]+\d+)"([^>]*?)(/?)>', part)
-            if not m:
-                continue
-            ref, attrs, selfclose = m.group(1), m.group(2), m.group(3)
-            body = "" if selfclose else part[m.end():].split("</c>")[0]
-            vm = re.search(r"<v>(.*?)</v>", body, re.S)
-            if vm and 't="s"' in attrs:
-                try:
-                    rows[ref] = strings[int(vm.group(1))]
-                except Exception:
-                    rows[ref] = ""
-            elif "DISPIMG" in body:
-                f = re.search(r'DISPIMG\(&quot;([^&]+)&quot;', body) or \
-                    re.search(r'DISPIMG\("([^"]+)"', body)
-                rows[ref] = {"__img__": f.group(1) if f else "?"}
+        for cell in ET.fromstring(s).iter():
+            if local_name(cell) != 'c': continue
+            ref = cell.get('r')
+            if not ref: continue
+            formula = next((n.text or '' for n in cell if local_name(n) == 'f'), '')
+            value = next((n.text or '' for n in cell if local_name(n) == 'v'), '')
+            if 'DISPIMG' in formula:
+                match = re.search(r'DISPIMG\("([^"\s]+)"', formula)
+                rows[ref] = {'__img__':match.group(1) if match else '?'}
+            elif cell.get('t') == 's':
+                try: rows[ref] = strings[int(value)]
+                except (ValueError,IndexError): rows[ref] = ''
+            elif cell.get('t') == 'inlineStr':
+                rows[ref] = ''.join(n.text or '' for n in cell.iter() if local_name(n) == 't')
         print(f"\n=== SHEET {name} : 含图单元格 ===")
         for ref, val in sorted(rows.items(), key=lambda kv: (row_of(kv[0]), kv[0])):
             if isinstance(val, dict) and "__img__" in val:
