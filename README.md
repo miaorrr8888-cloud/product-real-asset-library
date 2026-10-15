@@ -1,5 +1,7 @@
 # 产品真实素材索引工具
 
+[新手逐步使用指南](USER_GUIDE.md) · [用途与适用人群介绍](INTRODUCTION.md)
+
 `product-real-asset-library` · 独立技能仓库 · MIT
 
 适合：整理供应商产品图、报价表和视频的电商人员
