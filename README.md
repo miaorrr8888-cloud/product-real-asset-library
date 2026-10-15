@@ -31,9 +31,9 @@ python scripts/xlsx_cellimage_map.py examples/demo.xlsx
 
 已补：改成流式哈希和有边界的 MP4 头读取；坏文件保留 PARTIAL/ERROR 并继续；支持更多常见图片；图片关系和单元格改用 XML 解析。
 
-## 仍然缺什么
+## 当前限制
 
-不是完整媒体解码器：MP4/MOV/M4V 只读头信息，不支持 AVI/MKV 元数据；WPS DISPIMG 以外的所有嵌图变体未覆盖；哈希和报价表位置不能证明官方来源或版权。
+来源与授权是输入声明，不能自动证明官方出处或许可有效；需要实际留存授权证明。AVI/MKV 和更多 WPS 变体尚未覆盖。
 
 ## 验证与使用注意
 
@@ -54,3 +54,15 @@ python -m unittest discover -s tests -v
 [全部独立技能与阶段性工作记录](https://github.com/miaorrr8888-cloud/agent-skills-worklog)
 
 示例 `examples/demo.xlsx` 是用于演示解析关系的最小 ZIP/XML 测试夹具，不是可直接填写的完整 Excel 模板。
+
+## 第二轮：素材来源和授权台账
+
+新增逐文件 SHA256、重复素材标记、来源网址、授权证据与发布复核状态；缺授权证据默认为 HOLD。
+
+在仓库根目录运行：
+
+```sh
+python scripts/build_asset_index.py examples/asset-ledger.json
+```
+
+新增工具的输入字段见脚本参数与 examples/。快照示例采用固定日期，过期后正常返回 HOLD；需要检查新采集的页面时填写真实带时区的采集时间，不要改日期伪装新证据。
