@@ -1,0 +1,47 @@
+{
+  "_说明": "把 rights 改成 owned/licensed/public_domain 并填 rights_evidence（如“供应商微信授权截图 2026-10-01”）后，用 --rights 指向本文件再跑一次。rights 仍为 unknown 的项会保持 HOLD。",
+  "assets": [
+    {
+      "file": "说明.txt",
+      "sha256": "9ca62e85814aa881cf00742d8f76f8cc4ef3ee053e56b0bbb85a46f4dbc5389f",
+      "rights": "unknown",
+      "source_url": null,
+      "rights_evidence": null
+    },
+    {
+      "file": "主图/示例_主图_01.png",
+      "sha256": "ccf456327f2f5e83fb09ff545eca11be9660c4c4169552d8ba870001fbe8e129",
+      "rights": "unknown",
+      "source_url": null,
+      "rights_evidence": null
+    },
+    {
+      "file": "副本/IMG_0001.png",
+      "sha256": "ccf456327f2f5e83fb09ff545eca11be9660c4c4169552d8ba870001fbe8e129",
+      "rights": "unknown",
+      "source_url": null,
+      "rights_evidence": null
+    },
+    {
+      "file": "场景/示例_场景图_桌面.png",
+      "sha256": "b997fb7c61d2dddb53026bff6a503772b5d73e3edc3183180b7168e7586a70f8",
+      "rights": "unknown",
+      "source_url": null,
+      "rights_evidence": null
+    },
+    {
+      "file": "细节/示例_细节图_瓶盖.png",
+      "sha256": "0d7176ef82541b856e200618351b4b65e3c295d29e7259c1876afb7a42f071b2",
+      "rights": "unknown",
+      "source_url": null,
+      "rights_evidence": null
+    },
+    {
+      "file": "视频/示例_展示视频.mp4",
+      "sha256": "5b569bcb7553650fdc89538b1c7ed7fa36e28caab7673e1115e7a838e5b39432",
+      "rights": "unknown",
+      "source_url": null,
+      "rights_evidence": null
+    }
+  ]
+}

@@ -1,8 +1,8 @@
-# 产品素材整理与来源台账：用户使用指南
+# 商品真实素材库：用户使用指南
 
 ## 它能帮你做什么
 
-读取常见图片尺寸与部分视频头信息，计算文件指纹；登记来源与授权证据，标出重复素材；辅助解析部分WPS报价表嵌图。
+把一个乱糟糟的素材文件夹，变成一份能直接交差、能直接看的清单：有缩略图、有重复标记、有缺项提示、有来源和授权状态。
 
 ## 适合谁
 
@@ -10,78 +10,112 @@
 
 ## 具体解决什么问题
 
-目录里文件重复、图片来源没记、同一报价表的图片与产品行容易混淆。
+- 不知道这个文件夹里到底有什么、哪些是重复的；
+- 供应商给的图不知道能不能用、授权到哪一步了；
+- 上架前没人能说清「还缺白底图还是缺视频」；
+- WPS 报价表里一堆内嵌图，对不上是哪个型号。
 
-**不适合这些目标：**自动认出所有产品型号、证明图片版权、完整解码所有视频格式或兼容所有Excel嵌图方式。
+**不适合这些目标：** 自动认出产品型号、证明图片版权、完整解码所有视频格式、兼容所有 Excel 嵌图方式。
 
 ## 下载与准备
 
-- [打开独立仓库](https://github.com/miaorrr8888-cloud/product-real-asset-library)
-- [直接下载源码ZIP](https://github.com/miaorrr8888-cloud/product-real-asset-library/archive/refs/heads/main.zip)
+解压后，打开包含 `SKILL.md`、`README.md`、`USER_GUIDE.md` 的那一层文件夹。不要停在外层目录，也不要只复制一个脚本。
 
-也可在仓库页面点 Code → Download ZIP。解压后打开包含 SKILL.md、README.md、USER_GUIDE.md 的那层文件夹。不要停在外层目录或只复制一个脚本。
-
-建议使用Windows电脑和Python 3.12；这是本次验证环境。先在该文件夹打开PowerShell，再执行：
+在 Windows 上建议用 Python 3.12（本指南验证环境），在该文件夹打开 PowerShell：
 
 ```powershell
 python --version
 python -m venv .venv
 .\.venv\Scripts\python.exe --version
+.\.venv\Scripts\python.exe -m pip install Pillow
 ```
 
-这里直接使用虚拟环境里的Python，不需要运行激活脚本或修改系统执行策略。安装步骤及其他系统说明见[通用安装说明](https://github.com/miaorrr8888-cloud/agent-skills-worklog/blob/main/INSTALLATION.md)。
-
-本指南的基础示例只用Python标准库，无需安装第三方Python包。
+`Pillow` 只用于生成缩略图。不装也能跑，但清单里没有缩略图。
 
 ## 第一次使用：先跑自带示例
 
-先读取一张演示图片的信息，再生成素材台账；授权信息缺失时保留HOLD，不假装可放心发布。
-
 ```powershell
-.\.venv\Scripts\python.exe scripts/media_probe.py examples/media --json
-.\.venv\Scripts\python.exe scripts/build_asset_index.py examples/asset-ledger.json
+.\.venv\Scripts\python.exe scripts/asset_library.py examples/示例素材 --out ./样例输出
 ```
 
-## 结果怎么看
+正常输出（退出码 1 是预期的，因为示例没有授权信息）：
 
-第一条输出文件尺寸、字节数、SHA256等信息；第二条输出素材记录。示例授权未知，因此 release_status=HOLD 是正常结果。
+```text
+文件 6 个｜唯一指纹 5｜重复 1 个（可回收 3.2 KB）
+可复核 0｜HOLD 6｜缩略图 4
+! 未提供授权声明：全部素材为 HOLD（可内部查看，不建议直接对外投放）。
+```
 
-## 换成自己的资料
+然后打开 `样例输出/素材清单.html`。你会看到：6 张卡片、1 个紫色「重复」标记、1 组重复说明、4 张缩略图、以及「必备类别检查」全部通过。
 
-图片/支持的视频文件或目录；台账JSON中的 assets 数组，每项含 file，可填写 source_url、rights、rights_evidence。文件须在台账文件所在目录内。
+不想跑也能看：`examples/示例输出/` 就是这次运行的真实产物。
 
-先复制少量自己的素材到独立工作目录，再为它们写一份台账；来源不明就写 unknown。确认小样可读后再处理更多文件。
+## 换成自己的素材
+
+```powershell
+.\.venv\Scripts\python.exe scripts/asset_library.py "D:\素材\榨汁杯" --out "D:\素材\榨汁杯-清单" --product "榨汁杯 JZ-200"
+```
+
+第一次跑完，先打开 `D:\素材\榨汁杯-清单\素材清单.html` 核对：
+
+1. 缩略图对不对得上型号（防止混入别的款）；
+2. 重复组里的「保留件」是不是你要留的那份；
+3. 「必备类别检查」缺什么——缺就补拍或找供应商要，别用静态图冒充视频。
+
+## 补授权，把 HOLD 变成可复核
+
+1. 打开输出目录里的 `授权与来源-待填.json`；
+2. 每项把 `rights` 改成 `owned` / `licensed` / `public_domain`，并在 `rights_evidence` 写清楚证据（例：`供应商微信授权截图 2026-10-01`）；有原始页面就填 `source_url`（必须 https）；
+3. 存回原路径，再跑一次：
+
+```powershell
+.\.venv\Scripts\python.exe scripts/asset_library.py "D:\素材\榨汁杯" --out "D:\素材\榨汁杯-清单" --rights "D:\素材\榨汁杯-清单\授权与来源-待填.json"
+```
+
+清单里对应项会变成「可复核」。注意：**这只是把你的声明记录下来**，工具不会去查版权，也不代表法律上没问题。
+
+## 只想按类别归档一份
+
+```powershell
+.\.venv\Scripts\python.exe scripts/asset_library.py "D:\素材\榨汁杯" --out "D:\素材\榨汁杯-清单" --organize
+```
+
+会在 `榨汁杯-清单\organized\主图\...` 之类目录里**复制**一份，原文件不动、不删、不改名。重复件不参与复制。
 
 ## 不想手动敲命令：给AI助手的任务
 
-以下任务适用于能读取所选目录、执行本地命令的助手。WorkBuddy需要先确认当前版本的权限与技能启用状态；本项目未完成WorkBuddy实际导入验收。
-
 ```text
-请先读取我选定文件夹中的 SKILL.md 和 USER_GUIDE.md，只在该项目范围内处理。
-用自带素材先生成文件索引和授权台账，解释尺寸、SHA256、重复项与HOLD。随后告诉我怎样用自己的文件副本替换示例。不要推断素材是官方图片或自动声称版权已确认。
-缺少依赖时先说明用途，优先放进本项目虚拟环境；不要读取其他目录中的密码、密钥或浏览器登录数据。
+请只在我选定的素材文件夹和输出文件夹内操作，先用 scripts/asset_library.py 生成清单，
+再打开 素材清单.html 告诉我：有哪些重复、缺哪些必备类别、哪些是 HOLD。
+然后列出需要我补的授权证据清单。不要联网、不要上传我的素材、不要声称图片版权已被确认，
+不要把合成示例当成真实商品照片。
 ```
 
 ## 常见问题
 
 **文件标 PARTIAL 或 ERROR**
+先用图片查看器或播放器确认文件是否正常，再检查是否属于支持格式（视频仅 MP4/MOV/M4V 读头）。
 
-先用播放器或图片查看器确认文件是否正常，再检查是否属于支持格式。
+**素材被标 HOLD**
+看 `rights` 和 `rights_evidence` 是否缺失。填了也要人工复核，不能随手写「已授权」。
 
-**素材被标HOLD**
-
-查看 rights 和 rights_evidence 是否缺失；填入真实证据后仍应人工复核，不能随意填“已授权”。
+**没有缩略图**
+没装 Pillow，或用了 `--no-thumbs`。装：`python -m pip install Pillow`。
 
 **找不到文件或脚本**
+确认终端当前目录就是含 `SKILL.md` 的那层；路径含空格或中文时加双引号。
 
-确认终端当前目录就是包含SKILL.md的技能根目录；路径含空格时加双引号。输出目录已存在时换新名字，不覆盖已有结果。
+**重跑会覆盖上次结果吗**
+会覆盖同名清单与缩略图目录（这是为了让结果和当前文件夹一致）；`organized/` 里已存在的文件会跳过不覆盖。
 
 ## 当前能力边界
 
-核心脚本只读支持格式的信息。MP4/MOV/M4V主要读头，AVI/MKV未覆盖；来源和授权是输入声明。examples/demo.xlsx 是解析用最小测试夹具，不是可直接填写的完整Excel模板。
+- 判重只认 SHA256 字节一致；相似图不算重复。
+- 来源与授权是输入声明，工具不核验版权。
+- 角色按文件名关键词推断，标「推断 / 按类型 / UNKNOWN」，会误判。
+- 视频不抽封面帧（未接入 ffmpeg）；AVI/MKV 只统计文件本身。
+- `examples/demo.xlsx` 是解析用最小夹具，不是可填写的 Excel 模板。
 
 ## 验证范围
 
-本指南示例已在Windows独立副本中运行复核，见[命令复核结果](https://github.com/miaorrr8888-cloud/agent-skills-worklog/blob/main/USER_GUIDES_VERIFICATION.md)。已有回归测试只覆盖被测试行为，不证明真实业务结果。WorkBuddy实际运行、手机端使用和所有系统版本均不在本次已验证范围内。
-
-许可证和素材来源分别见 [LICENSE](LICENSE)、[PROVENANCE.md](PROVENANCE.md)。
+本指南示例已在 Windows 11 + Python 3.13 的独立副本中实际运行（见 `examples/示例输出`）。macOS / Linux 未验证。WorkBuddy 内的对话调用只在本次交付环境中跑过，未做市场审核。

@@ -1,0 +1,7 @@
+﻿文件,类型,推断角色,角色来源,分辨率,时长秒,字节,SHA256,探测状态,授权,发布状态,重复于,来源网址
+说明.txt,文档,其他,按类型,UNKNOWN,UNKNOWN,122,9ca62e85814aa881cf00742d8f76f8cc4ef3ee053e56b0bbb85a46f4dbc5389f,N/A,unknown,HOLD,,
+主图/示例_主图_01.png,图片,主图,推断,560x560,UNKNOWN,3255,ccf456327f2f5e83fb09ff545eca11be9660c4c4169552d8ba870001fbe8e129,OK,unknown,HOLD,,
+副本/IMG_0001.png,图片,主图,推断,560x560,UNKNOWN,3255,ccf456327f2f5e83fb09ff545eca11be9660c4c4169552d8ba870001fbe8e129,OK,unknown,HOLD,主图/示例_主图_01.png,
+场景/示例_场景图_桌面.png,图片,场景图,推断,560x420,UNKNOWN,2673,b997fb7c61d2dddb53026bff6a503772b5d73e3edc3183180b7168e7586a70f8,OK,unknown,HOLD,,
+细节/示例_细节图_瓶盖.png,图片,细节图,推断,520x400,UNKNOWN,2560,0d7176ef82541b856e200618351b4b65e3c295d29e7259c1876afb7a42f071b2,OK,unknown,HOLD,,
+视频/示例_展示视频.mp4,视频,视频,按类型,1080x1920,8.0,256,5b569bcb7553650fdc89538b1c7ed7fa36e28caab7673e1115e7a838e5b39432,OK,unknown,HOLD,,
