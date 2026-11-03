@@ -2,7 +2,7 @@
 name: product-real-asset-library
 description: 给一个素材文件夹就自动整理商品图片和视频：算指纹、标重复、生成带缩略图的清单，来源与授权未知时如实标 HOLD。
 license: MIT
-version: "1.1.0"
+version: 1.1.1
 display_name: "商品真实素材库"
 agent_created: true
 
