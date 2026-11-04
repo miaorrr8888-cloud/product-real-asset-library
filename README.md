@@ -124,6 +124,15 @@ python scripts/build_asset_index.py examples/asset-ledger.json
 
 `examples/demo.xlsx` 是解析用最小 ZIP/XML 夹具，不是可直接填写的 Excel 模板。
 
+## 许可证
+
+MIT，全文见 [LICENSE](LICENSE)。可商用、可修改、可再分发，保留版权与许可声明即可。
+
+**不提供任何形式的担保。** 本技能输出的是辅助判断，不构成法律、财税或平台合规意见；
+素材授权状态以 `rights_evidence` 字段为准，未提供证据一律 HOLD。
+
+第三方依赖各自遵循其原始许可证，本项目不再分发它们的代码或模型权重，详见 `PROVENANCE.md`（如有）。
+
 ## 运行环境
 
 | 项 | 状态 |
