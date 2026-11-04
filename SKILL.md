@@ -1,5 +1,8 @@
 ---
 name: product-real-asset-library
+slug: zhengrong-product-real-asset-library
+displayName: "商品真实素材库"
+summary: "给一个素材文件夹就自动算指纹、标重复、生成带缩略图的清单；来源与授权不明一律标 HOLD。"
 description: 给一个素材文件夹就自动整理商品图片和视频：算指纹、标重复、生成带缩略图的清单，来源与授权未知时如实标 HOLD。
 license: MIT
 version: 1.1.1
